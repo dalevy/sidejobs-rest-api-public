@@ -10,8 +10,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.sidejobs.api.common.ResponseStatus;
 import com.sidejobs.api.common.ResponseWrapper;
+import com.sidejobs.api.entities.Area;
 import com.sidejobs.api.entities.Category;
+import com.sidejobs.api.entities.Specialty;
+import com.sidejobs.api.repositories.AreasRepository;
 import com.sidejobs.api.repositories.CategoriesRepository;
+import com.sidejobs.api.repositories.SpecialtiesRepository;
 
 
 @RestController
@@ -19,11 +23,96 @@ import com.sidejobs.api.repositories.CategoriesRepository;
 public class JobsController {
 
 	private final CategoriesRepository categoriesRepository;
+	private final AreasRepository areasRepository;
+	private final SpecialtiesRepository specialtiesRepository;
 	
 	@Autowired
-	public JobsController(CategoriesRepository categoriesRepository)
+	public JobsController(CategoriesRepository categoriesRepository, AreasRepository areasRepository, SpecialtiesRepository specialtiesRepository)
 	{
 		this.categoriesRepository = categoriesRepository;
+		this.areasRepository = areasRepository;
+		this.specialtiesRepository = specialtiesRepository;
+	}
+	
+	/***
+	 * List specialty by id
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping(value="/specialties/search/{id}",method=RequestMethod.GET)
+	public ResponseWrapper<Specialty> getSpecialtyById(@PathVariable String id){
+	
+		ResponseWrapper<Specialty> result = new ResponseWrapper<Specialty>(ResponseStatus.Failure);
+		Specialty categories = this.specialtiesRepository.findSpecialtyById(id);
+		
+		if(categories == null)
+			return result;
+		
+		result =  new ResponseWrapper<Specialty>(ResponseStatus.Success,categories);
+	
+		return result;
+		
+	}
+	
+	
+	/***
+	 * List all specialites
+	 * @return
+	 */
+	@RequestMapping(value="/specialties/list",method=RequestMethod.GET)
+	public ResponseWrapper<Collection<Specialty>> getSpecialties(){
+	
+		ResponseWrapper<Collection<Specialty>> result = new ResponseWrapper<Collection<Specialty>>(ResponseStatus.Failure);
+		Collection<Specialty> categories = this.specialtiesRepository.listSpecialites();
+		
+		if(categories == null)
+			return result;
+		
+		result =  new ResponseWrapper<Collection<Specialty>>(ResponseStatus.Success,categories);
+	
+		return result;
+		
+	}
+	
+	
+	/***
+	 * List area by id
+	 * @param id
+	 * @return
+	 */
+	@RequestMapping(value="/areas/search/{id}",method=RequestMethod.GET)
+	public ResponseWrapper<Area> getAreaById(@PathVariable String id){
+	
+		ResponseWrapper<Area> result = new ResponseWrapper<Area>(ResponseStatus.Failure);
+		Area categories = this.areasRepository.findAreaById(id);
+		
+		if(categories == null)
+			return result;
+		
+		result =  new ResponseWrapper<Area>(ResponseStatus.Success,categories);
+	
+		return result;
+		
+	}
+	
+	
+	/***
+	 * List all areas
+	 * @return
+	 */
+	@RequestMapping(value="/areas/list",method=RequestMethod.GET)
+	public ResponseWrapper<Collection<Area>> getActiveAreas(){
+	
+		ResponseWrapper<Collection<Area>> result = new ResponseWrapper<Collection<Area>>(ResponseStatus.Failure);
+		Collection<Area> categories = this.areasRepository.listAreas();
+		
+		if(categories == null)
+			return result;
+		
+		result =  new ResponseWrapper<Collection<Area>>(ResponseStatus.Success,categories);
+	
+		return result;
+		
 	}
 	
 	/***
