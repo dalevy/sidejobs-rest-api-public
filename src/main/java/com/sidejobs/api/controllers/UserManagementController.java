@@ -1,5 +1,7 @@
 package com.sidejobs.api.controllers;
 
+import java.io.UnsupportedEncodingException;
+import java.sql.Timestamp;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -29,7 +31,6 @@ import com.sidejobs.api.repositories.UsersRepository;
 import com.sidejobs.api.repositories.VerificationsRepository;
 import com.sidejobs.api.util.BCryptPasswordUtil;
 import com.sidejobs.api.util.MailClientUtil;
-import com.sidejobs.events.OnRegistrationCompleteEvent;
 
 @CrossOrigin(origins = "http://localhost:8080", maxAge = 3600)
 @RestController
@@ -46,9 +47,6 @@ public class UserManagementController {
     private JavaMailSender mailSender;
 	
 	@Autowired
-	private ApplicationEventPublisher eventPublisher;
-	
-	@Autowired
 	public UserManagementController(UsersRepository usersRepository, VerificationsRepository verificationsRepository)
 	{
 		this.usersRepository = usersRepository;
@@ -61,15 +59,28 @@ public class UserManagementController {
 		ResponseWrapper<VerificationResponse> result = new ResponseWrapper<VerificationResponse>(ResponseStatus.Failure);
 		Verification veri = this.verificationsRepository.findVerificationByToken(token);
 		
+		System.out.println("Verifying token");
 		if(veri == null)
 			return result;
+		
+		if(!veri.isTokenValid(new Timestamp(System.currentTimeMillis())))
+		{
+			System.out.println("Token is not valid");
+			return result;
+
+		}
+		
+		this.verificationsRepository.closeVerificationToken(token);
+		this.usersRepository.setUserAccountVerified(veri.getUserId());
+		
+		System.out.println("Token verified");
 		
 		result =  new ResponseWrapper<VerificationResponse>(ResponseStatus.Success,new VerificationResponse(ResponseCodes.USER_REGISTRATION_SUCCESSFUL));
 	
 		return result;
 	}
 	
-	@RequestMapping(value="/register/worker", method=RequestMethod.GET)
+	@RequestMapping(value="/register/worker", method=RequestMethod.POST)
 	public ResponseWrapper<RegistrationResponse> registerStudent(
 			HttpServletRequest request,
 			@RequestParam("email")String email,
@@ -77,7 +88,7 @@ public class UserManagementController {
 			@RequestParam("lastname")String lastName,
 			@RequestParam("password")String password
 
-			) throws MessagingException{
+			) throws MessagingException, UnsupportedEncodingException{
 		
 		ResponseWrapper<RegistrationResponse> response =  null;
 		
@@ -119,7 +130,7 @@ public class UserManagementController {
 		//send verification email
 		User u = this.usersRepository.findUserById(id);
 		
-		String server = env.getProperty("sidejobs.web.address"); 
+		String server = env.getProperty("sidejobs.web.token.path"); 
 		
 		MailClientUtil maiClient = new MailClientUtil(mailSender,u,server);
 		String token = maiClient.sendRegistrationConfirmation();
@@ -130,21 +141,6 @@ public class UserManagementController {
 
 		
 	}
-	
-	   private void confirmRegistration(User user, String url) {
-	        String token = UUID.randomUUID().toString();
-	        System.out.println("Sending mail");
-	        String recipientAddress = user.getEmail();
-	        String subject = "Registration Confirmation";
-	        String confirmationUrl 
-	          = url + "/regitrationConfirm.html?token=" + token;
-	         
-	        SimpleMailMessage email = new SimpleMailMessage();
-	        email.setTo(recipientAddress);
-	        email.setSubject(subject);
-	        email.setText(" rn" + "http://localhost:8080" + confirmationUrl);
-	        mailSender.send(email);
-	        System.out.println("Mail sent");
-	    }
+
 
 }

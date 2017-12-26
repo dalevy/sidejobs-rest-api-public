@@ -40,12 +40,14 @@ public class User implements Serializable {
 	private String phone;
 	private String role;
 	private String status;
+	private String verified;
 	
 	public User() {
 		
 	}
 	
-	
+
+
 	public String getId() {
 		return id;
 	}
@@ -80,6 +82,14 @@ public class User implements Serializable {
 
 	public String getStatus() {
 		return status;
+	}
+
+	public String getVerified() {
+		return verified;
+	}
+
+	public void setVerified(String verified) {
+		this.verified = verified;
 	}
 
 

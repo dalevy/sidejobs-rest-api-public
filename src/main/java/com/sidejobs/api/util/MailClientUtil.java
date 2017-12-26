@@ -1,5 +1,8 @@
 package com.sidejobs.api.util;
 
+import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.mail.MessagingException;
@@ -29,7 +32,7 @@ public class MailClientUtil {
 		this.mailSender = mailSender;
 	}
 	
-	public String sendRegistrationConfirmation() {
+	public String sendRegistrationConfirmation() throws UnsupportedEncodingException {
 	   String token = 
 			   UUID.randomUUID()
 			   .toString()
@@ -44,8 +47,11 @@ public class MailClientUtil {
 	   System.out.println("Sending mail");
 	   
 	   String subject = "SideJobs Registration Confirmation";
-	   String confirmationUrl 
-       = path + "/regitrationConfirm.html?token=" + token;
+	   Map<String,String> params = new HashMap<>();
+	   params.put("token", token);
+	   params.put("user", user.getId());
+	   
+	   String confirmationUrl = path +"?"+ ParameterStringBuilder.getParamsString(params);
 	   
 	   String html = "<html><body>Please click the following link to confirm your registration: <a href='"+confirmationUrl+"'>"+confirmationUrl+"</a></body><br/>You can also copy and paste it into your browser</html>";
 	   

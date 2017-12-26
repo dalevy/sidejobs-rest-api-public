@@ -21,5 +21,10 @@ public interface VerificationsRepository extends CrudRepository<Verification, St
 			@Param("user_id") String user_id,
 			@Param("reason") String reason
 			);
+	
+	@Modifying
+	@Transactional
+	@Query(value="UPDATE verifications SET status ='Closed' WHERE token = :token", nativeQuery = true)
+	void closeVerificationToken(@Param("token") String token);
 	 
 }
