@@ -1,7 +1,5 @@
 package com.sidejobs.api.util;
 
-import java.util.function.Function;
-
 import org.mindrot.jbcrypt.BCrypt;
 
 public class BCryptPasswordUtil {

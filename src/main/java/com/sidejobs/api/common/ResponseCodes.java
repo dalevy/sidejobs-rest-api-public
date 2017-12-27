@@ -6,6 +6,7 @@ public enum ResponseCodes {
 	NOT_FOUND,
 	FAILURE,
 	USER_REGISTRATION_SUCCESSFUL,
+	USER_DOESNT_EXIST,
 	USER_EXISTS;
 	
 	public static String getResponseMessage(ResponseCodes code)
@@ -28,6 +29,9 @@ public enum ResponseCodes {
 				break;
 			case USER_EXISTS:
 				message = "The registration request has failed - user exists";
+				break;
+			case USER_DOESNT_EXIST:
+				message = "The user does not exist";
 				break;
 
 		}

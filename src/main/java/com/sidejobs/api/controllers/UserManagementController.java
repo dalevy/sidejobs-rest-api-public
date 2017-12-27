@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sidejobs.api.common.LoginResponse;
 import com.sidejobs.api.common.RegistrationResponse;
 import com.sidejobs.api.common.ResponseCodes;
 import com.sidejobs.api.common.ResponseStatus;
@@ -51,6 +52,48 @@ public class UserManagementController {
 	{
 		this.usersRepository = usersRepository;
 		this.verificationsRepository = verificationsRepository;
+	}
+	
+	@RequestMapping(value="/login", method=RequestMethod.POST)
+	public ResponseWrapper<LoginResponse> getUserLoginInfo(
+			@RequestParam(value="email", required=true) String email,
+			@RequestParam(value="password", required=true) String password)
+	{
+		ResponseWrapper<LoginResponse> result = new ResponseWrapper<LoginResponse>(ResponseStatus.Failure);
+		
+		BCryptPasswordUtil passUtil = new BCryptPasswordUtil();
+		
+		System.out.println("User email: "+email);
+		
+		Optional<User> opt = this.usersRepository.findUserByEmail(email);
+		User usr = (opt.isPresent()) ? opt.get() : null;
+		
+		//no such user
+		if(usr == null)
+			return result;
+		
+		boolean passValid = passUtil.verifyHash(password, usr.getPassword());
+		
+		System.out.println("Bcrypt password is : "+passValid);
+		//password failure
+		if(!passValid){
+			this.usersRepository.changeUserPasswordFailureCount(usr.getId(), usr.getPassword_failures()+1);
+			//fail password max
+			if(usr.getPassword_failures()+1 == Integer.parseInt(env.getProperty("sidejobs.user.password.failure.max")))
+			{
+				usr.setStatus("Locked");
+				this.usersRepository.changeUserAccountStatus(usr.getId(), "Locked");
+			}
+			return result;
+		}
+		
+		//correct login - reset password fail count
+		if(usr.getPassword_failures() > 0)
+			this.usersRepository.changeUserPasswordFailureCount(usr.getId(), 0);
+		
+		result = new ResponseWrapper<LoginResponse>(ResponseStatus.Success, new LoginResponse(usr));
+		
+		return result;
 	}
 	
 	@RequestMapping(value="/verification/{token}", method=RequestMethod.GET)

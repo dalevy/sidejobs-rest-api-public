@@ -91,6 +91,45 @@ public class User implements Serializable {
 	public void setVerified(String verified) {
 		this.verified = verified;
 	}
+	
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public void setFirst_name(String first_name) {
+		this.first_name = first_name;
+	}
+
+
+	public void setLast_name(String last_name) {
+		this.last_name = last_name;
+	}
+
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public void setPassword_failures(int password_failures) {
+		this.password_failures = password_failures;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+
+	public void setRole(String role) {
+		this.role = role;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
 
 
 }

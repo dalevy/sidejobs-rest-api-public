@@ -17,11 +17,54 @@ public interface UsersRepository extends CrudRepository<User,String> {
 	User findUserById(String id);
 	Optional<User> findUserByEmail(String email);
 	User findUserByPhone(String phone);
+	User findUserByEmailAndPassword(String email, String password);
+	
+	@Modifying
+	@Transactional
+	@Query(value="UPDATE users_identity SET password_failures = :value WHERE id = :id", nativeQuery=true)
+	void changeUserPasswordFailureCount(
+			@Param("id")String id, 
+			@Param("value")int value
+			);
+	
+	@Modifying
+	@Transactional
+	@Query(value="UPDATE users_identity SET status = :value WHERE id = :id", nativeQuery=true)
+	void changeUserAccountStatus(
+			@Param("id")String id, 
+			@Param("value")String value
+			);
+	
+	@Modifying
+	@Transactional
+	@Query(value="UPDATE users_identity SET phone = :value WHERE id = :id", nativeQuery=true)
+	void changeUserPhoneNumber(
+			@Param("id")String id, 
+			@Param("value")String value
+			);
+	
+	@Modifying
+	@Transactional
+	@Query(value="UPDATE users_identity SET email = :value WHERE id = :id", nativeQuery=true)
+	void changeUserEmailAddress(
+			@Param("id")String id, 
+			@Param("value")String value
+			);
+	
+	@Modifying
+	@Transactional
+	@Query(value="UPDATE users_identity SET password = :value WHERE id = :id", nativeQuery=true)
+	void changeUserPassword(
+			@Param("id")String id, 
+			@Param("value")String value
+			);
 	
 	@Modifying
 	@Transactional
 	@Query(value="UPDATE users_identity SET verified = 'Verified' WHERE id = :id", nativeQuery=true)
-	void setUserAccountVerified(@Param("id") String id);
+	void setUserAccountVerified(
+			@Param("id") String id
+			);
 	
 	@Procedure(name="register_worker_user")
 	void registerStudentUser(
