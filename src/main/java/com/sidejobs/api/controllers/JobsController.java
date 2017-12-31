@@ -2,10 +2,13 @@ package com.sidejobs.api.controllers;
 
 import java.util.Collection;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sidejobs.api.common.ResponseStatus;
@@ -21,6 +24,8 @@ import com.sidejobs.api.repositories.SpecialtiesRepository;
 @RestController
 @RequestMapping("/jobs")
 public class JobsController {
+	
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
 	private final CategoriesRepository categoriesRepository;
 	private final AreasRepository areasRepository;
@@ -33,6 +38,35 @@ public class JobsController {
 		this.areasRepository = areasRepository;
 		this.specialtiesRepository = specialtiesRepository;
 	}
+	
+	@RequestMapping(value="/specialties/area/category/list", method=RequestMethod.GET)
+	public ResponseWrapper<Collection<Specialty>> getSpecialtiesByAreaAndCategory(@RequestParam("area") String area, @RequestParam("category") String category){
+		
+		ResponseWrapper<Collection<Specialty>> result = new ResponseWrapper<Collection<Specialty>>(ResponseStatus.Failure);
+		Collection<Specialty> specialties = this.specialtiesRepository.listSpecialtiesByAreaAndCategory(area, category);
+		
+		if(specialties == null)
+			return result;
+		
+		result =  new ResponseWrapper<Collection<Specialty>>(ResponseStatus.Success,specialties);
+	
+		return result;
+	}
+	
+	@RequestMapping(value="/specialties/area/{id}/list", method=RequestMethod.GET)
+	public ResponseWrapper<Collection<Specialty>> getSpecialtiesByArea(@PathVariable("id") String id)
+	{
+		ResponseWrapper<Collection<Specialty>> result = new ResponseWrapper<Collection<Specialty>>(ResponseStatus.Failure);
+		Collection<Specialty> specialties = this.specialtiesRepository.listSpecialtiesByArea(id);
+		
+		if(specialties == null)
+			return result;
+		
+		result =  new ResponseWrapper<Collection<Specialty>>(ResponseStatus.Success,specialties);
+	
+		return result;
+	}
+	
 	
 	/***
 	 * List specialty by id
@@ -113,6 +147,20 @@ public class JobsController {
 	
 		return result;
 		
+	}
+	
+	@RequestMapping(value="/areas/category/{id}/list")
+	public ResponseWrapper<Collection<Area>> getAreasByActiveCategory(@PathVariable("id") String id)
+	{
+		ResponseWrapper<Collection<Area>> result = new ResponseWrapper<Collection<Area>>(ResponseStatus.Failure);
+		Collection<Area> categories = this.areasRepository.listAreasByActiveCategory(id);
+		
+		if(categories == null)
+			return result;
+		
+		result =  new ResponseWrapper<Collection<Area>>(ResponseStatus.Success,categories);
+	
+		return result;
 	}
 	
 	/***

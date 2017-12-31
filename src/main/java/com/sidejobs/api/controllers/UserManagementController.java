@@ -8,6 +8,8 @@ import java.util.UUID;
 import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletRequest;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.env.Environment;
@@ -37,6 +39,8 @@ import com.sidejobs.api.util.MailClientUtil;
 @RestController
 @RequestMapping("/admin/users")
 public class UserManagementController {
+	
+	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 	
 	private final UsersRepository usersRepository;
 	private final VerificationsRepository verificationsRepository;
