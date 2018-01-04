@@ -2,22 +2,33 @@ package com.sidejobs.api.common;
 
 import java.io.Serializable;
 
+import com.sidejobs.api.entities.User;
+
 public class RegistrationResponse implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	private String message;
 	private ResponseCodes code;
-	private String userId;
+	private User user;
 	
 	public RegistrationResponse() {}
 	
-	public RegistrationResponse(ResponseCodes code)
+	public RegistrationResponse(ResponseCodes code, User user)
 	{
 		this.message = ResponseCodes.getResponseMessage(code);
 		this.code = code;
+		this.user = user;
 	}
 	
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
+	}
+
 	public String getMessage() {
 		return message;
 	}
@@ -33,16 +44,6 @@ public class RegistrationResponse implements Serializable {
 	public void setCode(ResponseCodes code) {
 		this.code = code;
 	}
-
-	public String getUserId() {
-		return userId;
-	}
-
-	public void setUserId(String userId) {
-		this.userId = userId;
-	}
-	
-
 	
 
 }

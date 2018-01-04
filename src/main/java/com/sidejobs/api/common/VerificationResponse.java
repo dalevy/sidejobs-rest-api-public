@@ -2,13 +2,15 @@ package com.sidejobs.api.common;
 
 import java.io.Serializable;
 
+import com.sidejobs.api.entities.User;
+
 public class VerificationResponse implements Serializable{
 
 	private static final long serialVersionUID = 1L;
 	
 	private String message;
 	private ResponseCodes code;
-	private String userId;
+	private User user;
 	
 	public VerificationResponse() {}
 	
@@ -16,7 +18,13 @@ public class VerificationResponse implements Serializable{
 	{
 		this.code = code;
 	}
-
+	
+	public VerificationResponse(ResponseCodes code, User user)
+	{
+		this(code);
+		this.user = user;
+	}
+	
 	public String getMessage() {
 		return message;
 	}
@@ -33,12 +41,12 @@ public class VerificationResponse implements Serializable{
 		this.code = code;
 	}
 
-	public String getUserId() {
-		return userId;
+	public User getUser() {
+		return user;
 	}
 
-	public void setUserId(String userId) {
-		this.userId = userId;
+	public void setUser(User user) {
+		this.user = user;
 	}
 
 }
